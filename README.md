@@ -30,6 +30,7 @@ It is designed for cases where you do not want to keep watching the terminal: Co
 
 | Provider | Best for | Command value |
 | --- | --- | --- |
+| ntfy | Free iPhone and Apple Watch alerts | `ntfy` |
 | Pushover | Phone and Apple Watch alerts | `pushover` |
 | Pushcut | iOS automation webhooks | `pushcut` |
 | Generic webhook | Any JSON endpoint | `webhook` |
@@ -48,7 +49,7 @@ The WeCom provider sends a markdown message to a WeCom group robot webhook.
 Copy this into Codex:
 
 ```text
-Install the Codex skill from https://github.com/zhangzaikunzzk/Codex-Task-Notifier/tree/main/skills/task-complete-notifier
+Install the Codex skill from https://github.com/zzk-kun/Codex-Task-Notifier/tree/main/skills/task-complete-notifier
 ```
 
 Restart Codex after installation, then ask:
@@ -57,7 +58,7 @@ Restart Codex after installation, then ask:
 Use $task-complete-notifier to set up task completion notifications.
 ```
 
-Codex will walk through the local setup for Pushover, Pushcut, generic webhook, or WeCom.
+Codex will walk through the local setup for ntfy, Pushover, Pushcut, generic webhook, or WeCom.
 
 ## Does it edit AGENTS.md automatically?
 
@@ -74,6 +75,17 @@ Codex should ask whether to write the rule globally or only for the current proj
 ## Manual setup
 
 Download this repository, open PowerShell in the project folder, then choose a provider.
+
+### ntfy (recommended free option)
+
+Install the free ntfy iPhone app, then run:
+
+```powershell
+.\setup.ps1 -Provider ntfy
+.\notify-task-complete.ps1 -Provider ntfy -Title "Task Notifier" -Message "Test notification"
+```
+
+Setup generates an unguessable random topic and prints it once. Subscribe to that exact topic in the ntfy app. The free hosted service currently allows 250 messages per day. Topic names on the public `ntfy.sh` service are not access-controlled, so treat the generated topic like a password and do not send sensitive content in notifications.
 
 ### Pushover
 
@@ -112,7 +124,7 @@ Regular personal WeChat groups do not provide the same official simple webhook f
 
 ## Apple Watch
 
-Apple Watch receives the alert by mirroring Pushover notifications from your iPhone. If the phone receives the alert but the watch does not, check Pushover notification mirroring in the iPhone Watch app.
+Apple Watch receives the alert by mirroring ntfy or Pushover notifications from your iPhone. If the phone receives the alert but the watch does not, check notification mirroring for the selected app in the iPhone Watch app.
 
 ## Project structure
 
@@ -121,6 +133,7 @@ Apple Watch receives the alert by mirroring Pushover notifications from your iPh
 ├── notify-task-complete.ps1
 ├── setup.ps1
 ├── .env.example
+├── tests/test-notifier.ps1
 └── skills/
     └── task-complete-notifier/
         ├── SKILL.md
@@ -130,6 +143,6 @@ Apple Watch receives the alert by mirroring Pushover notifications from your iPh
 
 ## Security
 
-- Do not paste webhook URLs, Pushover keys, or Pushcut URLs into chat.
+- Do not paste ntfy topics or tokens, webhook URLs, Pushover keys, or Pushcut URLs into chat.
 - `.env` stays on your machine and is ignored by Git.
-- The scripts do not print your secrets.
+- The notification script does not print secret values. Setup displays a newly generated ntfy topic once so you can subscribe; do not copy it into chat or logs.

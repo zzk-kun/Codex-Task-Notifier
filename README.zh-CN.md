@@ -30,6 +30,7 @@
 
 | 方式 | 适合什么 | Provider |
 | --- | --- | --- |
+| ntfy | 免费的 iPhone 和 Apple Watch 提醒 | `ntfy` |
 | Pushover | 手机和 Apple Watch | `pushover` |
 | Pushcut | iOS 自动化 webhook | `pushcut` |
 | 通用 webhook | 任意能接 JSON 的服务 | `webhook` |
@@ -48,7 +49,7 @@
 把这句话复制给 Codex：
 
 ```text
-Install the Codex skill from https://github.com/zhangzaikunzzk/Codex-Task-Notifier/tree/main/skills/task-complete-notifier
+Install the Codex skill from https://github.com/zzk-kun/Codex-Task-Notifier/tree/main/skills/task-complete-notifier
 ```
 
 安装完后，重启 Codex。然后说：
@@ -57,7 +58,7 @@ Install the Codex skill from https://github.com/zhangzaikunzzk/Codex-Task-Notifi
 Use $task-complete-notifier to set up task completion notifications.
 ```
 
-Codex 会带你选 Pushover、Pushcut、通用 webhook 或企微机器人。
+Codex 会带你选 ntfy、Pushover、Pushcut、通用 webhook 或企微机器人。
 
 ## 会自动写 AGENTS.md 吗？
 
@@ -74,6 +75,19 @@ Codex 应该先问你写到哪里：全局 AGENTS，还是当前项目 AGENTS。
 ## 手动用法
 
 下载这个仓库，在项目文件夹里打开 PowerShell，然后选一种 provider。
+
+### ntfy（推荐的免费方案）
+
+先在 iPhone 安装免费的 ntfy App，然后运行：
+
+```powershell
+.\setup.ps1 -Provider ntfy
+.\notify-task-complete.ps1 -Provider ntfy -Title "Task Notifier" -Message "测试通知"
+```
+
+设置脚本会生成一个随机 topic，并在本地显示一次。请在 ntfy App 中订阅同一个 topic。ntfy.sh 免费服务目前每天可发送 250 条消息，足够用于任务完成提醒。
+
+公开 ntfy.sh 上的 topic 没有访问控制。这个随机 topic 相当于密码，不要公开，也不要在通知内容里放密钥、代码或私人路径。
 
 ### Pushover
 
@@ -112,7 +126,7 @@ Codex 应该先问你写到哪里：全局 AGENTS，还是当前项目 AGENTS。
 
 ## Apple Watch
 
-Apple Watch 是跟着 iPhone 的 Pushover 通知走的。手机能收到，手表没收到，就去 iPhone 的 Watch App 里检查 Pushover 的通知镜像。
+Apple Watch 会镜像 iPhone 上的 ntfy 或 Pushover 通知。手机能收到、手表收不到时，请到 iPhone 的 Watch App 中检查对应 App 的通知镜像设置。
 
 ## 项目结构
 
@@ -121,6 +135,7 @@ Apple Watch 是跟着 iPhone 的 Pushover 通知走的。手机能收到，手�
 ├── notify-task-complete.ps1
 ├── setup.ps1
 ├── .env.example
+├── tests/test-notifier.ps1
 └── skills/
     └── task-complete-notifier/
         ├── SKILL.md
@@ -130,7 +145,7 @@ Apple Watch 是跟着 iPhone 的 Pushover 通知走的。手机能收到，手�
 
 ## 安全提醒
 
-- 不要把 Pushover key、Pushcut URL、企微机器人 URL 或其他 webhook 地址发到聊天里。
+- 不要把 ntfy topic 或 token、Pushover key、Pushcut URL、企微机器人 URL 或其他 webhook 地址发到聊天里。
 - `.env` 只应该留在你自己的电脑上。
 - 这个仓库已经把 `.env` 加进 `.gitignore`。
-- 脚本不会打印你的密钥。
+- 发送通知的脚本不会打印 secret。setup 会在本机显示一次新生成的 ntfy topic，方便你订阅；不要把它复制到聊天或日志中。
